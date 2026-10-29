@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جولة افتراضية - الشقة الأرضية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<style>html,body,#pano{width:100%;height:100%;margin:0}</style>
+</head>
+<body>
+<div id="pano"></div>
+<script>
+// H(نص السهم, المشهد الهدف, yaw, pitch)
+// الـ yaw: 0 = منتصف الصورة، موجب = يمين، سالب = يسار، 180 = ورا
+const H = (text, to, yaw, pitch = -5) => ({ type: 'scene', text, sceneId: to, yaw, pitch });
+const S = (title, file, hotSpots) => ({ title, type: 'equirectangular', panorama: file, hotSpots });
+
+pannellum.viewer('pano', {
+  default: {
+    firstScene: 'building',
+    autoLoad: true,
+    sceneFadeDuration: 800,
+    // افتح الصفحة بـ ?debug لتعرف yaw/pitch بالضغط على الصورة
+    hotSpotDebug: location.search.includes('debug')
+  },
+  scenes: {
+    building: S('العمارة', 'building.jpg', [
+      H('المدخل الرئيسي', 'building_corridor', 0),
+      H('الترس', 'terrace1', 90)
+    ]),
+    building_corridor: S('ممر العمارة', 'building_corrido.jpg', [
+      H('باب البيت', 'apt_door', 0),
+      H('رجوع للخارج', 'building', 180)
+    ]),
+    apt_door: S('باب البيت', 'apt_door.jpg', [
+      H('غرفة الضيوف', 'guest_room', 0),
+      H('رجوع للممر', 'building_corridor', 180)
+    ]),
+    guest_room: S('غرفة الضيوف', 'guest_room.jpg', [
+      H('حمام الضيوف', 'guest_bathroom', -90),
+      H('الممر الرئيسي', 'corridor_main', -45),
+      H('الترس', 'terrace1', 90),
+      H('باب البيت', 'apt_door', 180)
+    ]),
+    guest_bathroom: S('حمام الضيوف', 'guest_bathroom.jpg', [
+      H('رجوع لغرفة الضيوف', 'guest_room', 180)
+    ]),
+    terrace1: S('الترس 1', 'terrace1.jpg', [
+      H('غرفة الضيوف', 'guest_room', -90),
+      H('الترس 2', 'terrace2', 90),
+      H('العمارة من برا', 'building', 180)
+    ]),
+    terrace2: S('الترس 2', 'terrace2.jpg', [
+      H('المطبخ', 'kitchen', 0),
+      H('الترس 1', 'terrace1', 180)
+    ]),
+    corridor_main: S('الممر الرئيسي', 'corridor_main.jpg', [
+      H('غرفة المعيشة', 'livinroom1', 0),
+      H('ممر الماستر', 'corridor_maste', -90),
+      H('غرفة الضيوف', 'guest_room', 180)
+    ]),
+    corridor_maste: S('ممر الماستر', 'corridor_maste.jpg', [
+      H('غرفة الماستر', 'master_bedroom', 0),
+      H('حمام الماستر', 'master_bathroom', 90),
+      H('رجوع للممر', 'corridor_main', 180)
+    ]),
+    master_bedroom: S('غرفة الماستر', 'master_bedroom.jpg', [
+      H('رجوع للممر', 'corridor_maste', 180)
+    ]),
+    master_bathroom: S('حمام الماستر', 'master_bathroom.jpg', [
+      H('رجوع للممر', 'corridor_maste', 180)
+    ]),
+    livinroom1: S('غرفة المعيشة (زاوية 1)', 'livinroom1.jpg', [
+      H('زاوية 2', 'livingroom2', 0),
+      H('المطبخ', 'kitchen', 90),
+      H('الممر الرئيسي', 'corridor_main', 180)
+    ]),
+    livingroom2: S('غرفة المعيشة (زاوية 2)', 'livingroom2.jpg', [
+      H('ممر الغرف', 'corridor_rooms', 0),
+      H('المطبخ', 'kitchen', 90),
+      H('زاوية 1', 'livinroom1', 180)
+    ]),
+    kitchen: S('المطبخ', 'kitchen.jpg', [
+      H('الترس 2', 'terrace2', 90),
+      H('غرفة المعيشة', 'livingroom2', 180)
+    ]),
+    corridor_rooms: S('ممر الغرف', 'corridor_rooms.jpg', [
+      H('غرفة 1', 'room1', -90),
+      H('غرفة 2', 'room2', 90),
+      H('الحمام المشترك', 'shared_bathroom', 0),
+      H('غرفة البويلر', 'boiler_room', 45),
+      H('غرفة المعيشة', 'livingroom2', 180)
+    ]),
+    room1: S('غرفة 1', 'room1.jpg', [
+      H('رجوع للممر', 'corridor_rooms', 180)
+    ]),
+    room2: S('غرفة 2', 'room2.jpg', [
+      H('الساحة الخارجية', 'room2_yard', 90),
+      H('رجوع للممر', 'corridor_rooms', 180)
+    ]),
+    room2_yard: S('ساحة غرفة 2', 'room2_yard.jpg', [
+      H('رجوع لغرفة 2', 'room2', 180)
+    ]),
+    shared_bathroom: S('الحمام المشترك', 'shared_bathroom.jpg', [
+      H('رجوع للممر', 'corridor_rooms', 180)
+    ]),
+    boiler_room: S('غرفة البويلر', 'boiler_room.jpg', [
+      H('رجوع للممر', 'corridor_rooms', 180)
+    ])
+  }
+});
+</script>
+</body>
+</html>
